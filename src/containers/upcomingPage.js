@@ -3,6 +3,7 @@ import React from "react"
 import { bindActionCreators } from "redux"
 import { connect } from "react-redux"
 import { Link } from "react-router-dom"
+import PropType from "prop-types"
 
 import { requestApiData } from "../actions/actions"
 
@@ -12,16 +13,19 @@ class List extends React.Component {
   constructor(props) {
     super(props)
 
+    const { req } = this.props
+
     this.state = {
       offset: 0,
+      request: req,
     }
   }
 
   componentDidMount() {
-    const { offset } = this.state
+    const { offset, request } = this.state
 
     try {
-      this.props.requestApiData(offset)
+      request(offset)
     } catch (e) {
       // console.log(e);
     }
@@ -56,6 +60,7 @@ class List extends React.Component {
 
   header = () => {
     const { offset } = this.state
+    const { data } = this.props
 
     return (
       <div className="header-rocket-list">
@@ -69,13 +74,13 @@ class List extends React.Component {
         </button>
         <h1 className="listing">
           Listing Upcoming Launches from {offset}
-          to {this.calculateEnd(this.props.data.count)}
+          to {this.calculateEnd(data.count)}
         </h1>
         <button
           type="button"
           className="buttom-next"
-          disabled={offset + 10 >= this.props.data.count}
-          onClick={() => this.next(this.props.data.count)}
+          disabled={offset + 10 >= data.count}
+          onClick={() => this.next(data.count)}
         >
           Next
         </button>
@@ -85,6 +90,7 @@ class List extends React.Component {
 
   footer = () => {
     const { offset } = this.state
+    const { data } = this.props
 
     return (
       <div className="footer-rocket-list">
@@ -99,8 +105,8 @@ class List extends React.Component {
         <button
           type="button"
           className="buttom-next"
-          disabled={offset + 10 >= this.props.data.count}
-          onClick={() => this.next(this.props.data.count)}
+          disabled={offset + 10 >= data.count}
+          onClick={() => this.next(data.count)}
         >
           Next
         </button>
@@ -109,19 +115,19 @@ class List extends React.Component {
   }
 
   async prev() {
-    const { offset } = this.state
+    const { offset, request } = this.state
 
     if (offset >= 10) {
-      await this.props.requestApiData(offset - 10)
+      await request(offset - 10)
       this.setState({ offset: offset - 10 })
     }
   }
 
   async next(count) {
-    const { offset } = this.state
+    const { offset, request } = this.state
 
     if (offset <= count - 10) {
-      await this.props.requestApiData(offset + 10)
+      await request(offset + 10)
       this.setState({ offset: offset + 10 })
     }
   }
@@ -133,11 +139,13 @@ class List extends React.Component {
   }
 
   render() {
-    return this.props.data.results ? (
+    const { data } = this.props
+
+    return data.results ? (
       <div className="rocket-list">
         {this.spaces(this.header())}
 
-        {this.props.data.results.map(this.launch)}
+        {data.results.map(this.launch)}
 
         {this.spaces(this.footer())}
       </div>
@@ -147,9 +155,35 @@ class List extends React.Component {
   }
 }
 
+List.propTypes = {
+  data: PropType.shape({
+    count: PropType.number,
+    results: PropType.arrayOf(
+      PropType.shape({
+        id: PropType.string,
+        name: PropType.string,
+        mission: PropType.shape({
+          name: PropType.string,
+        }),
+        rocket: PropType.shape({
+          configuration: PropType.shape({
+            launch_service_provider: PropType.string,
+          }),
+        }),
+      })
+    ),
+  }),
+  req: PropType.func,
+}
+
+List.defaultProps = {
+  data: null,
+  req: () => 0,
+}
+
 const mapStateToProps = (state) => ({ data: state.data })
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ requestApiData }, dispatch)
+  bindActionCreators({ req: requestApiData }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(List)

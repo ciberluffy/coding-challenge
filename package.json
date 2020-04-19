@@ -6,7 +6,11 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "flow-bin": "^0.123.0",
+    "flow-typed": "^3.1.0",
     "http-proxy-middleware": "^1.0.3",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
@@ -21,7 +25,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint ."
+    "lint": "eslint . && flow"
   },
   "eslintConfig": {
     "extends": "react-app"

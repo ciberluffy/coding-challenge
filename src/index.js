@@ -1,4 +1,5 @@
-import React, { StrictMode } from "react"
+import React from "react"
+import { Provider } from "react-redux"
 import ReactDOM from "react-dom"
 import "./style/index.css"
 
@@ -15,9 +16,9 @@ sagaMiddleware.run(root)
 
 function render() {
   ReactDOM.render(
-    <StrictMode>
-      <AppRouter store={store} />
-    </StrictMode>,
+    <Provider store={store}>
+      <AppRouter />
+    </Provider>,
     document.getElementById("root")
   )
 }
