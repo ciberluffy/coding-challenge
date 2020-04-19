@@ -9,6 +9,7 @@ import AppRouter from "./routes"
 import root from "./redux-saga/sagas"
 import reducer from "./reducers"
 
+import "bootstrap/dist/css/bootstrap.css"
 import "./index.css"
 
 const sagaMiddleware = createSagaMiddleware()
