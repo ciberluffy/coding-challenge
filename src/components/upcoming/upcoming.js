@@ -5,9 +5,9 @@ import { connect } from "react-redux"
 import { Link } from "react-router-dom"
 import PropType from "prop-types"
 
-import { requestApiData } from "../actions/actions"
+import { requestApiData } from "../../actions/actions"
 
-import "../style/upcoming.css"
+import style from "./upcoming.module.css"
 
 class List extends React.Component {
   constructor(props) {
@@ -33,23 +33,23 @@ class List extends React.Component {
 
   spaces = (content) => (
     <div>
-      <div className="container" />
+      <div className={style.container} />
       {content}
-      <div className="container" />
+      <div className={style.container} />
     </div>
   )
 
   launch = (launch) => (
     <div key={launch.id}>
       {this.spaces(
-        <div className="rocket-card">
+        <div className={style["rocket-card"]}>
           <h2>{launch.name}</h2>
           <h4>{launch.rocket.configuration.launch_service_provider}</h4>
 
           <p>Mission: {launch.mission ? launch.mission.name : "unasign"}</p>
 
           <button type="button">
-            <Link className="link" to={`/${launch.id}`}>
+            <Link className={style.link} to={`/${launch.id}`}>
               Details
             </Link>
           </button>
@@ -63,22 +63,22 @@ class List extends React.Component {
     const { data } = this.props
 
     return (
-      <div className="header-rocket-list">
+      <div className={style["header-rocket-list"]}>
         <button
           type="button"
-          className="buttom-prev"
+          className={style["buttom-prev"]}
           disabled={offset === 0}
           onClick={() => this.prev()}
         >
           Prev
         </button>
-        <h1 className="listing">
+        <h1 className={style.listing}>
           Listing Upcoming Launches from {offset}
           to {this.calculateEnd(data.count)}
         </h1>
         <button
           type="button"
-          className="buttom-next"
+          className={style["buttom-next"]}
           disabled={offset + 10 >= data.count}
           onClick={() => this.next(data.count)}
         >
@@ -93,10 +93,10 @@ class List extends React.Component {
     const { data } = this.props
 
     return (
-      <div className="footer-rocket-list">
+      <div className={style["footer-rocket-list"]}>
         <button
           type="button"
-          className="buttom-prev"
+          className={style["buttom-prev"]}
           disabled={offset === 0}
           onClick={() => this.prev()}
         >
@@ -104,7 +104,7 @@ class List extends React.Component {
         </button>
         <button
           type="button"
-          className="buttom-next"
+          className={style["buttom-next"]}
           disabled={offset + 10 >= data.count}
           onClick={() => this.next(data.count)}
         >
@@ -142,7 +142,7 @@ class List extends React.Component {
     const { data } = this.props
 
     return data.results ? (
-      <div className="rocket-list">
+      <div className={style["rocket-list"]}>
         {this.spaces(this.header())}
 
         {data.results.map(this.launch)}

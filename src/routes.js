@@ -1,8 +1,8 @@
 import React from "react"
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
 
-import Rocket from "./containers/rocketDetailsPage"
-import List from "./containers/upcomingPage"
+import Rocket from "./components/rocketDetail/rocketDetails"
+import List from "./components/upcoming/upcoming"
 
 export default function AppRouter() {
   return (

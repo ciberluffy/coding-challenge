@@ -1,0 +1,15 @@
+.rocket-img {
+  width: 30%;
+  height: 350px;
+  margin-bottom: 15px;
+}
+
+.link {
+  text-decoration: blink;
+  color: black;
+}
+
+.container {
+  width: 20%;
+  display: inline-block;
+}

@@ -5,9 +5,9 @@ import { connect } from "react-redux"
 import { Link } from "react-router-dom"
 import PropType from "prop-types"
 
-import { requestApiDetails } from "../actions/actions"
+import { requestApiDetails } from "../../actions/actions"
 
-import "../style/rocketDetails.css"
+import style from "./rocketDetails.module.css"
 
 class Rocket extends React.Component {
   constructor(props) {
@@ -43,13 +43,13 @@ class Rocket extends React.Component {
           <h2>{detail.rocket.configuration.launch_service_provider.name}</h2>
           <img
             src={`${detail.rocket.configuration.image_url}`}
-            className="rocket-img"
+            className={style["rocket-img"]}
             alt={`${detail.name}`}
           />
         </div>
 
         <button type="button">
-          <Link className="link" to="/">
+          <Link className={style.link} to="/">
             Back
           </Link>
         </button>
