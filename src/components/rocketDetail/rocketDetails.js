@@ -1,7 +1,7 @@
-import React from "react"
+import React, { useEffect } from "react"
+import { useParams } from "react-router"
 
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import PropType from "prop-types"
 
@@ -9,55 +9,36 @@ import { requestApiDetails } from "../../actions/actions"
 
 import style from "./rocketDetails.module.css"
 
-class Rocket extends React.Component {
-  constructor(props) {
-    super(props)
+const Rocket = () => {
+  const detail = useSelector((state) => state.detail)
+  const dispatch = useDispatch()
 
-    const { req } = this.props
+  const { id } = useParams()
+  useEffect(() => {
+    dispatch(requestApiDetails(id))
+  }, [id, dispatch])
 
-    this.state = {
-      request: req,
-    }
-  }
-
-  componentDidMount() {
-    const { request } = this.state
-    const { match } = this.props
-
-    if (match.params) {
-      try {
-        request(match.params.id)
-      } catch (e) {
-        // console.log(e)
-      }
-    }
-  }
-
-  render() {
-    const { detail } = this.props
-
-    return detail && detail.id ? (
+  return detail && detail.id ? (
+    <div>
       <div>
-        <div>
-          <h1>{detail.name}</h1>
-          <h2>{detail.rocket.configuration.launch_service_provider.name}</h2>
-          <img
-            src={`${detail.rocket.configuration.image_url}`}
-            className={style["rocket-img"]}
-            alt={`${detail.name}`}
-          />
-        </div>
-
-        <button type="button">
-          <Link className={style.link} to="/">
-            Back
-          </Link>
-        </button>
+        <h1>{detail.name}</h1>
+        <h2>{detail.rocket.configuration.launch_service_provider.name}</h2>
+        <img
+          src={`${detail.rocket.configuration.image_url}`}
+          className={style["rocket-img"]}
+          alt={`${detail.name}`}
+        />
       </div>
-    ) : (
-      <h1>Loading...</h1>
-    )
-  }
+
+      <button type="button">
+        <Link className={style.link} to="/">
+          Back
+        </Link>
+      </button>
+    </div>
+  ) : (
+    <h1>Loading...</h1>
+  )
 }
 
 Rocket.propTypes = {
@@ -78,18 +59,11 @@ Rocket.propTypes = {
       id: PropType.string,
     }),
   }),
-  req: PropType.func,
 }
 
 Rocket.defaultProps = {
   detail: null,
   match: null,
-  req: () => 0,
 }
 
-const mapStateToProps = (state) => ({ detail: state.detail })
-
-const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ req: requestApiDetails }, dispatch)
-
-export default connect(mapStateToProps, mapDispatchToProps)(Rocket)
+export default Rocket

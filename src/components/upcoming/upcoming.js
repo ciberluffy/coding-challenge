@@ -1,7 +1,6 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 
-import { bindActionCreators } from "redux"
-import { connect } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import PropType from "prop-types"
 
@@ -9,47 +8,46 @@ import { requestApiData } from "../../actions/actions"
 
 import style from "./upcoming.module.css"
 
-class List extends React.Component {
-  constructor(props) {
-    super(props)
-
-    const { req } = this.props
-
-    this.state = {
-      offset: 0,
-      request: req,
-    }
+const prev = async (offset, setOffset, dispatch) => {
+  if (offset >= 10) {
+    await dispatch(requestApiData(offset - 10))
+    setOffset(offset - 10)
   }
+}
 
-  componentDidMount() {
-    const { offset, request } = this.state
-
-    try {
-      request(offset)
-    } catch (e) {
-      // console.log(e);
-    }
+const next = async (count, offset, setOffset, dispatch) => {
+  if (offset <= count - 10) {
+    await dispatch(requestApiData(offset + 10))
+    setOffset(offset + 10)
   }
+}
 
-  spaces = (content) => (
+const calculateEnd = (count, offset) => {
+  return offset + 10 > count ? count : offset + 10
+}
+
+const spaces = (content) => {
+  return (
     <div>
       <div className={style.container} />
       {content}
       <div className={style.container} />
     </div>
   )
+}
 
-  launch = (launch) => (
-    <div key={launch.id}>
-      {this.spaces(
+const launch = (l) => {
+  return (
+    <div key={l.id}>
+      {spaces(
         <div className={style["rocket-card"]}>
-          <h2>{launch.name}</h2>
-          <h4>{launch.rocket.configuration.launch_service_provider}</h4>
+          <h2>{l.name}</h2>
+          <h4>{l.rocket.configuration.launch_service_provider}</h4>
 
-          <p>Mission: {launch.mission ? launch.mission.name : "unasign"}</p>
+          <p>Mission: {l.mission ? l.mission.name : "unasign"}</p>
 
           <button type="button">
-            <Link className={style.link} to={`/${launch.id}`}>
+            <Link className={style.link} to={`/${l.id}`}>
               Details
             </Link>
           </button>
@@ -57,102 +55,78 @@ class List extends React.Component {
       )}
     </div>
   )
+}
 
-  header = () => {
-    const { offset } = this.state
-    const { data } = this.props
+const header = (offset, data, setOffset, dispatch) => {
+  return (
+    <div className={style["header-rocket-list"]}>
+      <button
+        type="button"
+        className={style["buttom-prev"]}
+        disabled={offset === 0}
+        onClick={() => prev(offset, setOffset, dispatch)}
+      >
+        Prev
+      </button>
+      <h2 className={style.listing}>
+        Listing Upcoming Launches from {offset}
+        to {calculateEnd(data.count, offset)}
+      </h2>
+      <button
+        type="button"
+        className={style["buttom-next"]}
+        disabled={offset + 10 >= data.count}
+        onClick={() => next(data.count, offset, setOffset, dispatch)}
+      >
+        Next
+      </button>
+    </div>
+  )
+}
 
-    return (
-      <div className={style["header-rocket-list"]}>
-        <button
-          type="button"
-          className={style["buttom-prev"]}
-          disabled={offset === 0}
-          onClick={() => this.prev()}
-        >
-          Prev
-        </button>
-        <h1 className={style.listing}>
-          Listing Upcoming Launches from {offset}
-          to {this.calculateEnd(data.count)}
-        </h1>
-        <button
-          type="button"
-          className={style["buttom-next"]}
-          disabled={offset + 10 >= data.count}
-          onClick={() => this.next(data.count)}
-        >
-          Next
-        </button>
-      </div>
-    )
-  }
+const footer = (offset, data, setOffset, dispatch) => {
+  return (
+    <div className={style["footer-rocket-list"]}>
+      <button
+        type="button"
+        className={style["buttom-prev"]}
+        disabled={offset === 0}
+        onClick={() => prev(offset, setOffset, dispatch)}
+      >
+        Prev
+      </button>
+      <button
+        type="button"
+        className={style["buttom-next"]}
+        disabled={offset + 10 >= data.count}
+        onClick={() => next(data.count, offset, setOffset, dispatch)}
+      >
+        Next
+      </button>
+    </div>
+  )
+}
 
-  footer = () => {
-    const { offset } = this.state
-    const { data } = this.props
+const List = () => {
+  const data = useSelector((state) => state.data)
+  const dispatch = useDispatch()
 
-    return (
-      <div className={style["footer-rocket-list"]}>
-        <button
-          type="button"
-          className={style["buttom-prev"]}
-          disabled={offset === 0}
-          onClick={() => this.prev()}
-        >
-          Prev
-        </button>
-        <button
-          type="button"
-          className={style["buttom-next"]}
-          disabled={offset + 10 >= data.count}
-          onClick={() => this.next(data.count)}
-        >
-          Next
-        </button>
-      </div>
-    )
-  }
+  const [offset, setOffset] = useState(0)
+  useEffect(() => {
+    dispatch(requestApiData(offset))
+  }, [offset, dispatch])
 
-  async prev() {
-    const { offset, request } = this.state
+  return data.results ? (
+    <div className={style["rocket-list"]}>
+      {spaces(header(offset, data, setOffset, dispatch))}
 
-    if (offset >= 10) {
-      await request(offset - 10)
-      this.setState({ offset: offset - 10 })
-    }
-  }
+      {data.results.map(launch)}
 
-  async next(count) {
-    const { offset, request } = this.state
-
-    if (offset <= count - 10) {
-      await request(offset + 10)
-      this.setState({ offset: offset + 10 })
-    }
-  }
-
-  calculateEnd(count) {
-    const { offset } = this.state
-
-    return offset + 10 > count ? count : offset + 10
-  }
-
-  render() {
-    const { data } = this.props
-
-    return data.results ? (
-      <div className={style["rocket-list"]}>
-        {this.spaces(this.header())}
-
-        {data.results.map(this.launch)}
-
-        {this.spaces(this.footer())}
-      </div>
-    ) : (
-      <h1>Loading...</h1>
-    )
-  }
+      {spaces(footer(offset, data, setOffset, dispatch))}
+    </div>
+  ) : (
+    <h1>Loading...</h1>
+  )
 }
 
 List.propTypes = {
@@ -173,17 +147,10 @@ List.propTypes = {
       })
     ),
   }),
-  req: PropType.func,
 }
 
 List.defaultProps = {
   data: null,
-  req: () => 0,
 }
 
-const mapStateToProps = (state) => ({ data: state.data })
-
-const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ req: requestApiData }, dispatch)
-
-export default connect(mapStateToProps, mapDispatchToProps)(List)
+export default List
