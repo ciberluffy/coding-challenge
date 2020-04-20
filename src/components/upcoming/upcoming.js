@@ -27,22 +27,9 @@ const calculateEnd = (count, offset) => {
   return offset + 10 > count ? count : offset + 10
 }
 
-const spaces = (content) => {
-  return (
-    <div>
-      <div className={style.container} />
-      {content}
-      <div className={style.container} />
-    </div>
-  )
-}
-
 const launch = (l) => {
   return (
     <div key={l.id} className={`card ${style["rocket-card"]}`}>
-      {/* <div className="card-header">
-        
-      </div> */}
       <div className="card-body">
         <div className="card-title">
           <Truncate lines={1} ellipsis={<span>...</span>}>
@@ -70,7 +57,7 @@ const launch = (l) => {
 
 const header = (offset, data, setOffset, dispatch) => {
   return (
-    <div className={style["header-rocket-list"]}>
+    <div className="d-flex justify-content-around">
       <button
         type="button"
         className="float-left btn btn-primary"
@@ -79,7 +66,7 @@ const header = (offset, data, setOffset, dispatch) => {
       >
         Prev
       </button>
-      <h2 className={style.listing}>
+      <h2>
         Listing Upcoming Launches from {`${offset} `}
         to {calculateEnd(data.count, offset)}
       </h2>
@@ -106,13 +93,10 @@ const List = () => {
 
   return data.results ? (
     <div className="d-flex flex-column">
-      {spaces(header(offset, data, setOffset, dispatch))}
-
+      {header(offset, data, setOffset, dispatch)}
       <div className="d-flex align-content-around justify-content-around flex-wrap">
         {data.results.map(launch)}
       </div>
-
-      {/* {spaces(footer(offset, data, setOffset, dispatch))} */}
     </div>
   ) : (
     <h1>Loading...</h1>
