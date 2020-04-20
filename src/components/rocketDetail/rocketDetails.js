@@ -30,11 +30,9 @@ const Rocket = () => {
         />
       </div>
 
-      <button type="button">
-        <Link className={style.link} to="/">
-          Back
-        </Link>
-      </button>
+      <Link className="btn btn-primary" to="/">
+        Back
+      </Link>
     </div>
   ) : (
     <h1>Loading...</h1>
